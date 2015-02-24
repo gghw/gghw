@@ -5,7 +5,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.ff.gghw.configs.ITestAppConfig;
 
-public class TestBase {
+public abstract class TestBase {
     protected ApplicationContext newCtx() {
         return new AnnotationConfigApplicationContext(ITestAppConfig.class);
     }

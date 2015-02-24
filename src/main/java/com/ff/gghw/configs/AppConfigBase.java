@@ -16,7 +16,7 @@ import com.ff.gghw.services.AppServices;
 import com.ff.gghw.etc.Time;
 
 @Configuration
-public class AppConfigBase {
+public abstract class AppConfigBase {
     @Bean
     @Autowired
     public CommandLineApp cliApp(AppServices appServices, Time time, BufferedReader in, PrintStream out) {
