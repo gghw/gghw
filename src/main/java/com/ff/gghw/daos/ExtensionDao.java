@@ -12,24 +12,24 @@ import com.ff.gghw.models.Extension;
 @Repository
 @Transactional
 public class ExtensionDao extends BaseDao {
-	public ExtensionDao(SessionFactory sessionFactory) {
+    public ExtensionDao(SessionFactory sessionFactory) {
         super(sessionFactory);
     }
-
-	public void insert(Extension extension) {
-		persistObject(extension);
-	}
-
-	public Extension findById(int id) {
-		Criteria criteria = getSession().createCriteria(Extension.class);
-		criteria.add(Restrictions.eq("id", id));
-		return (Extension) criteria.uniqueResult();
-	}
-
-	public List<Extension> findByLoan(int loan) {
-		Criteria criteria = getSession().createCriteria(Extension.class);
-		criteria.add(Restrictions.eq("loan", loan));
-		return (List<Extension>) criteria.list();
-	}
+    
+    public void insert(Extension extension) {
+        persistObject(extension);
+    }
+    
+    public Extension findById(int id) {
+        Criteria criteria = getSession().createCriteria(Extension.class);
+        criteria.add(Restrictions.eq("id", id));
+        return (Extension) criteria.uniqueResult();
+    }
+    
+    public List<Extension> findByLoan(int loan) {
+        Criteria criteria = getSession().createCriteria(Extension.class);
+        criteria.add(Restrictions.eq("loan", loan));
+        return (List<Extension>) criteria.list();
+    }
 }
 

@@ -8,18 +8,18 @@ public abstract class BaseDao {
         this.sessionFactory = sessionFactory;
     }
     
-	public void persistObject(Object entity) {
-		getSession().persist(entity);
-	}
-
-	public void updateObject(Object entity) {
-		getSession().update(entity);
-	}
-
-	protected Session getSession() {
-		return sessionFactory.getCurrentSession();
-	}
-
-	private SessionFactory sessionFactory;
+    public void persistObject(Object entity) {
+        getSession().persist(entity);
+    }
+    
+    public void updateObject(Object entity) {
+        getSession().update(entity);
+    }
+    
+    protected Session getSession() {
+        return sessionFactory.getCurrentSession();
+    }
+    
+    private SessionFactory sessionFactory;
 }
 

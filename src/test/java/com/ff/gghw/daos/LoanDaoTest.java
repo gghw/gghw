@@ -14,7 +14,7 @@ public class LoanDaoTest extends TestBase {
     public void testInsertAndFindById() {
         LocalDate dueDate = new LocalDate(2001, 2, 3);
         LoanDao dao = newCtx().getBean("loanDao", LoanDao.class);
-
+        
         Loan l = new Loan(0, "client_id", 10000, 1000, dueDate);
         dao.insert(l);
         assertEquals(1, l.getId());
@@ -27,13 +27,13 @@ public class LoanDaoTest extends TestBase {
         assertEquals(1000, l.getInterest());
         assertEquals(dueDate, l.getDueDate());
     }
-
+    
     @Test
     public void testUpdate() {
         LocalDate dueDate1 = new LocalDate(2001, 2, 3);
         LocalDate dueDate2 = new LocalDate(2001, 2, 4);
         LoanDao dao = newCtx().getBean("loanDao", LoanDao.class);
-
+        
         Loan l = new Loan(0, "client_id", 10000, 1000, dueDate1);
         dao.insert(l);
         
@@ -59,32 +59,32 @@ public class LoanDaoTest extends TestBase {
         Loan l = dao.findById(1);
         assertNull(l);
     }
-
+    
     @Test
     public void testFindByClient() {
         LocalDate dueDate = new LocalDate(2001, 2, 3);
         LoanDao dao = newCtx().getBean("loanDao", LoanDao.class);
         List<Loan> list;
         Loan l;
-
+        
         l = new Loan(0, "client_id_1", 10000, 1000, dueDate);
         dao.insert(l);
         
         l.setId(0);
         l.setClient("client_id_2");
         dao.insert(l);
-
+        
         l.setId(0);
         l.setClient("client_id_2");
         dao.insert(l);
-
+        
         list = dao.findByClient("client_id");
         assertEquals(0, list.size());
-
+        
         list = dao.findByClient("client_id_1");
         assertEquals(1, list.size());
         assertEquals(1, list.get(0).getId());
-
+        
         list = dao.findByClient("client_id_2");
         assertEquals(2, list.size());
         assertEquals(2, list.get(0).getId());

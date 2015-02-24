@@ -23,7 +23,7 @@ public class CommandLineApp {
         this.in = in;
         this.out = out;
     }
-
+    
     public void run() throws java.io.IOException {
         for ( ; ; ) {
             out.println("Time: " + Time.format(time.get()));
@@ -38,7 +38,7 @@ public class CommandLineApp {
                 out.print("> ");
                 cmd = in.readLine();
             }
-
+            
             if ( cmd.equals("apply") ) {
                 applyForLoan();
             } else if ( cmd.equals("extend") ) {
@@ -87,7 +87,7 @@ public class CommandLineApp {
         
         LocalDateTime timestamp = time.get();
         out.println("Timestamp will be: " + Time.format(timestamp));
-
+        
         Loan l = appServices.applyForLoan(client, sum, interest, termDays, ip, timestamp);
         if ( l != null ) {
             out.println("\nCreated loan:");
@@ -96,17 +96,17 @@ public class CommandLineApp {
             out.println("\nLoan denied!");
         }
     }
-
+    
     private void extendLoan() throws java.io.IOException {
         int loan = 0;
         while ( loan <= 0 ) {
             out.print("LoanID(integer): ");
             loan = Helpers.safeParseInt(in.readLine(), 0);
         }
-
+        
         LocalDateTime timestamp = time.get();
         out.println("Timestamp will be: " + Time.format(timestamp));
-
+        
         Loan l = appServices.extendLoan(loan, timestamp);
         if ( l != null ) {
             out.println("\nExtended loan:");
@@ -128,7 +128,7 @@ public class CommandLineApp {
             describeLoan(loan);
         }
     }
-
+    
     private void skipTime() throws java.io.IOException {
         int hours = -1;
         while ( hours < 0 || hours > 999 ) {
@@ -147,7 +147,7 @@ public class CommandLineApp {
             out.println("  + " + extension);
         }
     }
-
+    
     private AppServices appServices;
     private Time time;
     private BufferedReader in;

@@ -10,21 +10,21 @@ public class Time {
     public Time() {
         addHours = 0;
     }
-
+    
     public LocalDateTime get() {
         LocalDateTime ldt = new LocalDateTime();
         return ldt.plusHours(addHours);
     }
-
+    
     public void skipHours(int addHours) {
         this.addHours += addHours;
     }
-
+    
     public static String format(LocalDateTime time) {
         DateTimeFormatter format = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
         return format.print(time);
     }
-
+    
     private int addHours;
 }
 

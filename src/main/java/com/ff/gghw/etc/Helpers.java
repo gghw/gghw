@@ -6,7 +6,7 @@ public class Helpers {
         if ( a == null || b == null ) return false;
         return a.equals(b);
     }
-
+    
     public static int safeParseInt(String string, int failValue) {
         try {
             return Integer.parseInt(string);

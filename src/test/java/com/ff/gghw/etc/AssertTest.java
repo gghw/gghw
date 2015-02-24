@@ -11,12 +11,12 @@ public class AssertTest {
     public void testAssertArgNoThrow() {
         Assert.arg(true);
     }
-
+    
     @Test(expected=IllegalArgumentException.class)
     public void testAssertArgThrow() {
         Assert.arg(false);
     }
-
+    
     @Test
     public void testForceCoverageHack() {
         assertNotNull(new Assert());

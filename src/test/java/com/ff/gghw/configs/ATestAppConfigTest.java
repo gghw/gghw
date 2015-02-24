@@ -16,11 +16,11 @@ public class ATestAppConfigTest {
     public void testCanInstantiateContextAndGetCliApp() {
         BufferedReader in = mock(BufferedReader.class);
         PrintStream out = mock(PrintStream.class);
-
+        
         ConfigurableApplicationContext appCtx = new AnnotationConfigApplicationContext(ATestAppConfig.class);
         appCtx.getBeanFactory().registerSingleton("ccin", in);
         appCtx.getBeanFactory().registerSingleton("ccout", out);
-
+        
         CommandLineApp cliApp = appCtx.getBean("cliApp", CommandLineApp.class);
         assertNotNull(cliApp);
         assertSame(in, appCtx.getBean("in"));

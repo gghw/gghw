@@ -26,14 +26,14 @@ public class ExtensionDaoTest extends TestBase {
         assertEquals(500, e.getAddedInterest());
         assertEquals(timestamp, e.getTimestamp());
     }
-
+    
     @Test
     public void testFindByIdFail() {
         ExtensionDao dao = newCtx().getBean("extensionDao", ExtensionDao.class);
         Extension e = dao.findById(1);
         assertNull(e);
     }
-
+    
     @Test
     public void testFindByLoan() {
         LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
@@ -45,18 +45,18 @@ public class ExtensionDaoTest extends TestBase {
         e.setId(0);
         e.setLoan(3);
         dao.insert(e);
-
+        
         e.setId(0);
         e.setLoan(3);
         dao.insert(e);
-
+        
         list = dao.findByLoan(1);
         assertEquals(0, list.size());
-
+        
         list = dao.findByLoan(2);
         assertEquals(1, list.size());
         assertEquals(1, list.get(0).getId());
-
+        
         list = dao.findByLoan(3);
         assertEquals(2, list.size());
         assertEquals(2, list.get(0).getId());

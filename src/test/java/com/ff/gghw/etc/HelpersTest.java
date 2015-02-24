@@ -18,7 +18,7 @@ public class HelpersTest {
         assertTrue(Helpers.objectsEqual(abc1, abc2));
         assertFalse(Helpers.objectsEqual(abc1, def));
     }
-
+    
     @Test
     public void testSafeParseInt() {
         assertEquals(0, Helpers.safeParseInt("x", 0));
@@ -28,7 +28,7 @@ public class HelpersTest {
         assertEquals(0, Helpers.safeParseInt("0", 2));
         assertEquals(-1, Helpers.safeParseInt("-1", 2));
     }
-
+    
     @Test
     public void testForceCoverageHack() {
         assertNotNull(new Helpers());

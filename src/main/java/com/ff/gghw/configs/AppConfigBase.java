@@ -22,31 +22,31 @@ public abstract class AppConfigBase {
     public CommandLineApp cliApp(AppServices appServices, Time time, BufferedReader in, PrintStream out) {
         return new CommandLineApp(appServices, time, in, out);
     }
-
+    
     @Bean
     @Autowired
     public AppServices appServices(ApplicationDao applicationDao, ExtensionDao extensionDao, LoanDao loanDao) {
         return new AppServices(applicationDao, extensionDao, loanDao);
     }
-
+    
     @Bean
     @Autowired
     public ApplicationDao applicationDao(SessionFactory sessionFactory) {
         return new ApplicationDao(sessionFactory);
     }
-
+    
     @Bean
     @Autowired
     public ExtensionDao extensionDao(SessionFactory sessionFactory) {
         return new ExtensionDao(sessionFactory);
     }
-
+    
     @Bean
     @Autowired
     public LoanDao loanDao(SessionFactory sessionFactory) {
         return new LoanDao(sessionFactory);
     }
-
+    
     @Bean
     public Time time() {
         return new Time();

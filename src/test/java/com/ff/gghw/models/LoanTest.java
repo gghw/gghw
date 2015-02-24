@@ -13,14 +13,14 @@ public class LoanTest extends TestBase {
     public void testGetters() {
         LocalDate dueDate = new LocalDate(2001, 2, 3);
         Loan l = new Loan(1, "client_id", 10000, 1000, dueDate);
-
+        
         assertEquals(1, l.getId());
         assertEquals("client_id", l.getClient());
         assertEquals(10000, l.getSum());
         assertEquals(1000, l.getInterest());
         assertEquals(dueDate, l.getDueDate());
     }
-
+    
     @Test
     public void testSetters() {
         LocalDate dueDate = new LocalDate(2001, 2, 3);
@@ -38,7 +38,7 @@ public class LoanTest extends TestBase {
         assertEquals(1000, l.getInterest());
         assertEquals(dueDate, l.getDueDate());
     }
-
+    
     @Test
     public void testEqualsAndHashCode() {
         {
@@ -58,45 +58,45 @@ public class LoanTest extends TestBase {
             Loan l1 = newLoan();
             Loan l2 = newLoan();
             assertEquals(l1, l2);
-            assertEquals(l1.hashCode(), l2.hashCode());            
+            assertEquals(l1.hashCode(), l2.hashCode());
         }
         {
             Loan l1 = newLoan();
             Loan l2 = newLoan();
             l2.setId(2);
             assertNotEquals(l1, l2);
-            assertNotEquals(l1.hashCode(), l2.hashCode());            
+            assertNotEquals(l1.hashCode(), l2.hashCode());
         }
         {
             Loan l1 = newLoan();
             Loan l2 = newLoan();
             l2.setClient("id_client");
             assertNotEquals(l1, l2);
-            assertNotEquals(l1.hashCode(), l2.hashCode());            
+            assertNotEquals(l1.hashCode(), l2.hashCode());
         }
         {
             Loan l1 = newLoan();
             Loan l2 = newLoan();
             l2.setSum(10001);
             assertNotEquals(l1, l2);
-            assertNotEquals(l1.hashCode(), l2.hashCode());            
+            assertNotEquals(l1.hashCode(), l2.hashCode());
         }
         {
             Loan l1 = newLoan();
             Loan l2 = newLoan();
             l2.setInterest(1001);
             assertNotEquals(l1, l2);
-            assertNotEquals(l1.hashCode(), l2.hashCode());            
+            assertNotEquals(l1.hashCode(), l2.hashCode());
         }
         {
             Loan l1 = newLoan();
             Loan l2 = newLoan();
             l2.setDueDate(new LocalDate(2001, 2, 4));
             assertNotEquals(l1, l2);
-            assertNotEquals(l1.hashCode(), l2.hashCode());            
+            assertNotEquals(l1.hashCode(), l2.hashCode());
         }
     }
-
+    
     @Test
     public void testToString() {
         Loan l = new Loan();
@@ -111,7 +111,7 @@ public class LoanTest extends TestBase {
               "Loan [id=1, client=client_id, sum=10000, interest=1000, dueDate=2001-02-03]"
             , "" + l);
     }
-
+    
     private Loan newLoan() {
         LocalDate dueDate = new LocalDate(2001, 2, 3);
         return new Loan(1, "client_id", 10000, 1000, dueDate);

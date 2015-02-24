@@ -13,7 +13,7 @@ public class ApplicationTest extends TestBase {
     public void testGetters() {
         LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
         Application a = new Application(1, 2, "client_id", 10000, 1000, 30, "1.2.3.4", timestamp);
-
+        
         assertEquals(1, a.getId());
         assertEquals(2, a.getLoan());
         assertEquals("client_id", a.getClient());
@@ -23,7 +23,7 @@ public class ApplicationTest extends TestBase {
         assertEquals("1.2.3.4", a.getIp());
         assertEquals(new LocalDateTime(2001, 2, 3, 4, 5, 6), a.getTimestamp());
     }
-
+    
     @Test
     public void testSetters() {
         LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
@@ -37,7 +37,7 @@ public class ApplicationTest extends TestBase {
         a.setTermDays(30);
         a.setIp("1.2.3.4");
         a.setTimestamp(timestamp);
-
+        
         assertEquals(1, a.getId());
         assertEquals(2, a.getLoan());
         assertEquals("client_id", a.getClient());
@@ -47,7 +47,7 @@ public class ApplicationTest extends TestBase {
         assertEquals("1.2.3.4", a.getIp());
         assertEquals(timestamp, a.getTimestamp());
     }
-
+    
     @Test
     public void testEqualsAndHashCode() {
         {
@@ -67,66 +67,66 @@ public class ApplicationTest extends TestBase {
             Application a1 = newApplication();
             Application a2 = newApplication();
             assertEquals(a1, a2);
-            assertEquals(a1.hashCode(), a2.hashCode());            
+            assertEquals(a1.hashCode(), a2.hashCode());
         }
         {
             Application a1 = newApplication();
             Application a2 = newApplication();
             a2.setId(2);
             assertNotEquals(a1, a2);
-            assertNotEquals(a1.hashCode(), a2.hashCode());            
+            assertNotEquals(a1.hashCode(), a2.hashCode());
         }
         {
             Application a1 = newApplication();
             Application a2 = newApplication();
             a2.setLoan(3);
             assertNotEquals(a1, a2);
-            assertNotEquals(a1.hashCode(), a2.hashCode());            
+            assertNotEquals(a1.hashCode(), a2.hashCode());
         }
         {
             Application a1 = newApplication();
             Application a2 = newApplication();
             a2.setClient("id_client");
             assertNotEquals(a1, a2);
-            assertNotEquals(a1.hashCode(), a2.hashCode());            
+            assertNotEquals(a1.hashCode(), a2.hashCode());
         }
         {
             Application a1 = newApplication();
             Application a2 = newApplication();
             a2.setSum(10001);
             assertNotEquals(a1, a2);
-            assertNotEquals(a1.hashCode(), a2.hashCode());            
+            assertNotEquals(a1.hashCode(), a2.hashCode());
         }
         {
             Application a1 = newApplication();
             Application a2 = newApplication();
             a2.setInterest(1001);
             assertNotEquals(a1, a2);
-            assertNotEquals(a1.hashCode(), a2.hashCode());            
+            assertNotEquals(a1.hashCode(), a2.hashCode());
         }
         {
             Application a1 = newApplication();
             Application a2 = newApplication();
             a2.setTermDays(31);
             assertNotEquals(a1, a2);
-            assertNotEquals(a1.hashCode(), a2.hashCode());            
+            assertNotEquals(a1.hashCode(), a2.hashCode());
         }
         {
             Application a1 = newApplication();
             Application a2 = newApplication();
             a2.setIp("1.2.3.5");
             assertNotEquals(a1, a2);
-            assertNotEquals(a1.hashCode(), a2.hashCode());            
+            assertNotEquals(a1.hashCode(), a2.hashCode());
         }
         {
             Application a1 = newApplication();
             Application a2 = newApplication();
             a2.setTimestamp(new LocalDateTime(2001, 2, 3, 4, 5, 7));
             assertNotEquals(a1, a2);
-            assertNotEquals(a1.hashCode(), a2.hashCode());            
+            assertNotEquals(a1.hashCode(), a2.hashCode());
         }
     }
-
+    
     @Test
     public void testToString() {
         LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
@@ -136,7 +136,7 @@ public class ApplicationTest extends TestBase {
               + ", timestamp=2001-02-03 04:05:06]"
             , "" + a);
     }
-
+    
     private Application newApplication() {
         LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
         return new Application(1, 2, "client_id", 10000, 1000, 30, "1.2.3.4", timestamp);

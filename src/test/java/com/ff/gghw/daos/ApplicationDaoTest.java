@@ -15,7 +15,7 @@ public class ApplicationDaoTest extends TestBase {
         LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
         ApplicationDao dao = newCtx().getBean("applicationDao", ApplicationDao.class);
         Application a = new Application(0, 2, "client_id", 10000, 1000, 30, "1.2.3.4", timestamp);
-
+        
         dao.insert(a);
         assertEquals(1, a.getId());
         
@@ -30,7 +30,7 @@ public class ApplicationDaoTest extends TestBase {
         assertEquals("1.2.3.4", a.getIp());
         assertEquals(timestamp, a.getTimestamp());
     }
-
+    
     @Test
     public void testUpdate() {
         LocalDateTime timestamp1 = new LocalDateTime(2001, 2, 3, 4, 5, 6);
@@ -38,7 +38,7 @@ public class ApplicationDaoTest extends TestBase {
         ApplicationDao dao = newCtx().getBean("applicationDao", ApplicationDao.class);
         Application a = new Application(0, 2, "client_id", 10000, 1000, 30, "1.2.3.4", timestamp1);
         dao.insert(a);
-
+        
         a.setLoan(3);
         a.setClient("id_client");
         a.setSum(10001);
@@ -60,31 +60,31 @@ public class ApplicationDaoTest extends TestBase {
         assertEquals("2.3.4.5", a.getIp());
         assertEquals(timestamp2, a.getTimestamp());
     }
-
+    
     @Test
     public void testFindByIdFail() {
         ApplicationDao dao = newCtx().getBean("applicationDao", ApplicationDao.class);
         Application a = dao.findById(1);
         assertNull(a);
     }
-
+    
     @Test
     public void testFindByLoan() {
         LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
         ApplicationDao dao = newCtx().getBean("applicationDao", ApplicationDao.class);
         Application a = new Application(0, 2, "client_id", 10000, 1000, 30, "1.2.3.4", timestamp);
-
+        
         dao.insert(a);
         assertEquals(1, a.getId());
         
         a = dao.findByLoan(1);
         assertNull(a);
-
+        
         a = dao.findByLoan(2);
         assertNotNull(a);
         assertEquals(1, a.getId());
     }
-
+    
     @Test
     public void testCountSinceWithIp() {
         LocalDateTime timestamp1 = new LocalDateTime(2001, 2, 3, 4, 0, 0);
@@ -93,18 +93,18 @@ public class ApplicationDaoTest extends TestBase {
         LocalDateTime timestamp4 = new LocalDateTime(2001, 2, 3, 7, 0, 0);
         ApplicationDao dao = newCtx().getBean("applicationDao", ApplicationDao.class);
         Application a = new Application(0, 2, "client_id", 10000, 1000, 30, "1.2.3.4", null);
-
+        
         a.setTimestamp(timestamp1);
         dao.insert(a);
-
+        
         a.setId(0);
         a.setTimestamp(timestamp2);
         dao.insert(a);
-
+        
         a.setId(0);
         a.setTimestamp(timestamp3);
         dao.insert(a);
-
+        
         a.setId(0);
         a.setIp("2.3.4.5");
         a.setTimestamp(timestamp4);

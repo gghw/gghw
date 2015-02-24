@@ -28,7 +28,7 @@ public class ATestAppConfig extends AppConfigBase {
         dataSource.setUrl("jdbc:h2:mem:test;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1");
         return dataSource;
     }
-
+    
     @Bean
     @Autowired
     public LocalSessionFactoryBean sessionFactory(DataSource dataSource) {
@@ -38,7 +38,7 @@ public class ATestAppConfig extends AppConfigBase {
         sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;
     }
-
+    
     private Properties hibernateProperties() {
         Properties properties = new Properties();
         properties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
@@ -47,28 +47,28 @@ public class ATestAppConfig extends AppConfigBase {
         properties.put("hibernate.hbm2ddl.auto", "create");
         return properties;        
     }
-
-	@Bean
+    
+    @Bean
     @Autowired
     public HibernateTransactionManager transactionManager(SessionFactory sessionFactory) {
        HibernateTransactionManager txManager = new HibernateTransactionManager();
        txManager.setSessionFactory(sessionFactory);
        return txManager;
     }
-
+    
     @Bean
     public BufferedReader in() {
         return cin;
     }
-
+    
     @Bean
     public PrintStream out() {
         return cout;
     }
-
+    
     @Resource(name="ccin")
     private BufferedReader cin;
-
+    
     @Resource(name="ccout")
     private PrintStream cout;
 }

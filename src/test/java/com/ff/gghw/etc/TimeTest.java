@@ -16,7 +16,7 @@ public class TimeTest {
         assertTrue(t.isAfter(t1));
         assertTrue(t.isBefore(t2));
     }
-
+    
     @Test
     public void testSkipHours() {
         Time time = new Time();
@@ -37,7 +37,7 @@ public class TimeTest {
             assertTrue(t.isBefore(t2));
         }
     }
-
+    
     @Test
     public void testFormat() {
         assertEquals("2001-02-03 04:05:06", Time.format(new LocalDateTime(2001, 2, 3, 4, 5, 6)));
