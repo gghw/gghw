@@ -73,33 +73,33 @@ public class Application {
     private LocalDateTime timestamp;
     
     public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public Application setId(int id) { this.id = id; return this; }
     
     public Loan getLoan() { return loan; }
-    public void setLoan(Loan loan) { this.loan = loan; }
+    public Application setLoan(Loan loan) { this.loan = loan; return this; }
     
     public String getClient() { return client; }
-    public void setClient(String client) { this.client = client; }
+    public Application setClient(String client) { this.client = client; return this; }
     
     public int getSum() { return sum; }
-    public void setSum(int sum) { this.sum = sum; }
+    public Application setSum(int sum) { this.sum = sum; return this; }
     
     public int getInterest() { return interest; }
-    public void setInterest(int interest) { this.interest = interest; }
+    public Application setInterest(int interest) { this.interest = interest; return this; }
     
     public int getTermDays() { return termDays; }
-    public void setTermDays(int termDays) { this.termDays = termDays; }
+    public Application setTermDays(int termDays) { this.termDays = termDays; return this; }
     
     public String getIp() { return ip; }
-    public void setIp(String ip) { this.ip = ip; }
+    public Application setIp(String ip) { this.ip = ip; return this; }
     
     public LocalDateTime getTimestamp() { return timestamp; }
-    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
+    public Application setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; return this; }
     
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 31)
-            .append(id).append(loan != null ? loan.getId() : 0).append(client).append(sum)
+            .append(id).append(loanId(loan)).append(client).append(sum)
             .append(interest).append(termDays).append(ip).append(timestamp)
             .toHashCode();
     }
@@ -111,7 +111,7 @@ public class Application {
         if ( !(obj instanceof Application) ) return false;
         Application other = (Application) obj;
         if ( id != other.id ) return false;
-        if ( (loan != null ? loan.getId() : 0) != (other.loan != null ? other.loan.getId() : 0) ) return false;
+        if ( loanId(loan) != loanId(other.loan) ) return false;
         if ( !Helpers.objectsEqual(client, other.client) ) return false;
         if ( sum != other.sum ) return false;
         if ( interest != other.interest ) return false;
@@ -123,11 +123,17 @@ public class Application {
     
     @Override
     public String toString() {
-        return "Application [id=" + id
-            + ", loan=" + (loan != null ? loan.getId() : 0)
-            + ", client=" + client + ", sum=" + sum
-            + ", interest=" + interest + ", termDays=" + termDays + ", ip=" + ip
-            + ", timestamp=" + Time.format(timestamp) + "]";
+        return "Application [id=" + id + ", loan=" + loanId(loan) + ", client=" + client
+            + ", sum=" + sum + ", interest=" + interest + ", termDays=" + termDays
+            + ", ip=" + ip + ", timestamp=" + Time.format(timestamp) + "]";
+    }
+    
+    private static int loanId(Loan loan) {
+        if ( loan != null ) {
+            return loan.getId();
+        } else {
+            return -1;
+        }
     }
 }
 

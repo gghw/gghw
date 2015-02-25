@@ -63,28 +63,29 @@ public class Loan {
     private List<Extension> extensions = new ArrayList<Extension>();
     
     public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public Loan setId(int id) { this.id = id; return this; }
     
     public String getClient() { return client; }
-    public void setClient(String client) { this.client = client; }
+    public Loan setClient(String client) { this.client = client; return this; }
     
     public int getSum() { return sum; }
-    public void setSum(int sum) { this.sum = sum; }
+    public Loan setSum(int sum) { this.sum = sum; return this; }
     
     public int getInterest() { return interest; }
-    public void setInterest(int interest) { this.interest = interest; }
+    public Loan setInterest(int interest) { this.interest = interest; return this; }
     
     public LocalDate getDueDate() { return dueDate; }
-    public void setDueDate(LocalDate dueDate) { this.dueDate = dueDate; }
+    public Loan setDueDate(LocalDate dueDate) { this.dueDate = dueDate; return this; }
     
     public Application getApplication() { return application; }
-    public void setApplication(Application application) { this.application = application; }
+    public Loan setApplication(Application application) { this.application = application; return this; }
     
     public List<Extension> getExtensions() { return extensions; }
-    public void setExtensions(List<Extension> extensions) { this.extensions = extensions; }
-    public void addExtension(Extension extension) {
+    public Loan setExtensions(List<Extension> extensions) { this.extensions = extensions; return this; }
+    public Loan addExtension(Extension extension) {
         extension.setLoan(this);
         extensions.add(extension);
+        return this;
     }
     
     @Override
@@ -107,7 +108,7 @@ public class Loan {
         if ( sum != other.sum ) return false;
         if ( interest != other.interest ) return false;
         if ( !Helpers.objectsEqual(dueDate, other.dueDate) ) return false;
-        if ( (application != null ? application.getId() : 0) != (other.application != null ? other.application.getId() : 0) ) return false;
+        if ( applicationId(application) != applicationId(other.application) ) return false;
         if ( extensions.size() != other.extensions.size() ) return false;
         ListIterator<Extension> miter = extensions.listIterator();
         ListIterator<Extension> oiter = other.extensions.listIterator();
@@ -121,10 +122,17 @@ public class Loan {
     
     @Override
     public String toString() {
-        return "Loan [id=" + id + ", client=" + client + ", sum=" + sum
-            + ", interest=" + interest + ", dueDate=" + dueDate
-            + ", application=" + (application != null ? application.getId() : 0)
+        return "Loan [id=" + id + ", client=" + client + ", sum=" + sum + ", interest=" + interest
+            + ", dueDate=" + dueDate + ", application=" + applicationId(application)
             + ", extensions=" + extensionString() + "]";
+    }
+    
+    private int applicationId(Application application) {
+        if ( application != null ) {
+            return application.getId();
+        } else {
+            return -1;
+        }
     }
     
     private String extensionString() {

@@ -37,9 +37,7 @@ public class AppServices {
         
         Loan loan = new Loan(0, client, sum, interest, timestamp.toLocalDate().plusDays(termDays));
         Application application = new Application(0, loan, client, sum, interest, termDays, ip, timestamp);
-        if ( !validateApplication(application) ) {
-            return null;
-        }
+        if ( !validateApplication(application) ) return null;
         
         loanDao.insert(loan);
         applicationDao.insert(application);

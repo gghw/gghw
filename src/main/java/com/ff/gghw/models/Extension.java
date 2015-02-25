@@ -58,25 +58,25 @@ public class Extension {
     private LocalDateTime timestamp;
     
     public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public Extension setId(int id) { this.id = id; return this; }
     
     public Loan getLoan() { return loan; }
-    public void setLoan(Loan loan) { this.loan = loan; }
+    public Extension setLoan(Loan loan) { this.loan = loan; return this; }
     
     public int getExtensionDays() { return extensionDays; }
-    public void setExtensionDays(int extensionDays) { this.extensionDays = extensionDays; }
+    public Extension setExtensionDays(int extensionDays) { this.extensionDays = extensionDays; return this; }
     
     public int getAddedInterest() { return addedInterest; }
-    public void setAddedInterest(int addedInterest) { this.addedInterest = addedInterest; }
+    public Extension setAddedInterest(int addedInterest) { this.addedInterest = addedInterest; return this; }
     
     public LocalDateTime getTimestamp() { return timestamp; }
-    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
+    public Extension setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; return this; }
     
     @Override
     public int hashCode() {
         return new HashCodeBuilder(13, 43)
-            .append(id).append((loan == null ? 0 : loan.getId()))
-            .append(extensionDays).append(addedInterest).append(timestamp)
+            .append(id).append(loanId(loan)).append(extensionDays)
+            .append(addedInterest).append(timestamp)
             .toHashCode();
     }
     
@@ -87,7 +87,7 @@ public class Extension {
         if ( !(obj instanceof Extension) ) return false;
         Extension other = (Extension) obj;
         if ( id != other.id ) return false;
-        if ( (loan == null ? 0 : loan.getId()) != (other.loan == null ? 0 : other.loan.getId()) ) return false;
+        if ( loanId(loan) != loanId(other.loan) ) return false;
         if ( extensionDays != other.extensionDays ) return false;
         if ( addedInterest != other.addedInterest ) return false;
         if ( !Helpers.objectsEqual(timestamp, other.timestamp) ) return false;
@@ -96,9 +96,16 @@ public class Extension {
     
     @Override
     public String toString() {
-        return "Extension [id=" + id + ", loan=" + (loan == null ? 0 : loan.getId())
-            + ", extensionDays=" + extensionDays + ", addedInterest=" + addedInterest
-            + ", timestamp=" + Time.format(timestamp) + "]";
+        return "Extension [id=" + id + ", loan=" + loanId(loan) + ", extensionDays=" + extensionDays
+            + ", addedInterest=" + addedInterest + ", timestamp=" + Time.format(timestamp) + "]";
+    }
+    
+    private static int loanId(Loan loan) {
+        if ( loan != null ) {
+            return loan.getId();
+        } else {
+            return -1;
+        }
     }
 }
 

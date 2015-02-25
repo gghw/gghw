@@ -1,8 +1,8 @@
 package com.ff.gghw.etc;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.joda.time.LocalDateTime;
+import static org.junit.Assert.*;
 
 import com.ff.gghw.etc.Time;
 

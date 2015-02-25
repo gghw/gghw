@@ -45,7 +45,7 @@ public class ATestAppConfig extends AppConfigBase {
         properties.put("hibernate.show_sql", "false");
         properties.put("hibernate.format_sql", "false");
         properties.put("hibernate.hbm2ddl.auto", "create");
-        return properties;        
+        return properties;
     }
     
     @Bean
@@ -58,18 +58,18 @@ public class ATestAppConfig extends AppConfigBase {
     
     @Bean
     public BufferedReader in() {
-        return cin;
+        return test_in;
     }
     
     @Bean
     public PrintStream out() {
-        return cout;
+        return test_out;
     }
     
-    @Resource(name="ccin")
-    private BufferedReader cin;
+    @Resource(name="test_in")
+    private BufferedReader test_in;
     
-    @Resource(name="ccout")
-    private PrintStream cout;
+    @Resource(name="test_out")
+    private PrintStream test_out;
 }
 

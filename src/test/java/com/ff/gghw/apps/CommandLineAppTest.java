@@ -1,9 +1,5 @@
 package com.ff.gghw.apps;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-import org.junit.Test;
-import static org.mockito.Mockito.*;
 import java.io.StringReader;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -12,8 +8,12 @@ import java.io.PrintStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import org.junit.*;
+import org.junit.Test;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import com.ff.gghw.apps.CommandLineApp;
 import com.ff.gghw.services.AppServices;
@@ -26,38 +26,32 @@ public class CommandLineAppTest {
     @Test
     public void testExit() {
         when(time.get()).thenReturn(new LocalDateTime(2001, 2, 3, 4, 5, 6));
-        makeInStream("exit\n");
         
-        CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
+        String output = runAppWith(input().enter("exit"));
         
         verify(time, times(1)).get();
         verifyNoMoreInteractions(appServices, time);
         
-        assertEquals("Time: 2001-02-03 04:05:06\n" + menuString, outBytes.toString());
+        assertEquals("Time: 2001-02-03 04:05:06\n" + menuString, output);
     }
     
     @Test
     public void testEmptyCommand() {
         when(time.get()).thenReturn(new LocalDateTime(2001, 2, 3, 4, 5, 6));
-        makeInStream("\nexit\n");
         
-        CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
+        String output = runAppWith(input().enter("").enter("exit"));
         
         verify(time, times(1)).get();
         verifyNoMoreInteractions(appServices, time);
         
-        assertEquals("Time: 2001-02-03 04:05:06\n" + menuString + "> ", outBytes.toString());
+        assertEquals("Time: 2001-02-03 04:05:06\n" + menuString + "> ", output);
     }
     
     @Test
     public void testUnrecognizedCommand() {
         when(time.get()).thenReturn(new LocalDateTime(2001, 2, 3, 4, 5, 6));
-        makeInStream("bad\nexit\n");
         
-        CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
+        String output = runAppWith(input().enter("bad").enter("exit"));
         
         verify(time, times(2)).get();
         verifyNoMoreInteractions(appServices, time);
@@ -65,7 +59,7 @@ public class CommandLineAppTest {
         assertEquals("Time: 2001-02-03 04:05:06\n" + menuString
                  + "Unrecognized command: bad\n"
                  + "\nTime: 2001-02-03 04:05:06\n" + menuString
-            , outBytes.toString());
+            , output);
     }
     
     @Test
@@ -77,10 +71,10 @@ public class CommandLineAppTest {
         
         when(time.get()).thenReturn(timestamp);
         when(appServices.applyForLoan("client_id", 10000, 500, 15, "1.2.3.4", timestamp)).thenReturn(loan);
-        makeInStream("apply\nclient_id\n10000\n15\n1.2.3.4\nexit\n");
         
-        CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
+        String output = runAppWith(input()
+            .enter("apply").enter("client_id").enter("10000").enter("15").enter("1.2.3.4")
+            .enter("exit"));
         
         verify(time, times(3)).get();
         verify(appServices, times(1)).applyForLoan("client_id", 10000, 500, 15, "1.2.3.4", timestamp);
@@ -99,7 +93,7 @@ public class CommandLineAppTest {
                    + "  * Application [id=456, loan=123, client=client_id, sum=10000, interest=500, termDays=15, ip=1.2.3.4, timestamp=2001-02-03 04:05:06]\n"
                    + "\n"
                    + "Time: 2001-02-03 04:05:06\n" + menuString
-            , outBytes.toString());
+            , output);
     }
     
     @Test
@@ -111,10 +105,14 @@ public class CommandLineAppTest {
         
         when(time.get()).thenReturn(timestamp);
         when(appServices.applyForLoan("client_id", 10000, 500, 15, "1.2.3.4", timestamp)).thenReturn(loan);
-        makeInStream("apply\n\nclient_id\n\n4999\n50001\n10000\n\n6\n31\n15\n\n1234\n1.2.3.4\nexit\n");
         
-        CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
+        String output = runAppWith(input()
+            .enter("apply")
+                .enter("").enter("client_id")
+                .enter("").enter("abc").enter("4999").enter("50001").enter("10000")
+                .enter("").enter("abc").enter("6").enter("31").enter("15")
+                .enter("").enter("abc").enter("1234").enter("1.2.3.4")
+            .enter("exit"));
         
         verify(time, times(3)).get();
         verify(appServices, times(1)).applyForLoan("client_id", 10000, 500, 15, "1.2.3.4", timestamp);
@@ -122,10 +120,10 @@ public class CommandLineAppTest {
         
         assertEquals("Time: 2001-02-03 04:05:06\n" + menuString
                    + "ClientID(string): " + "ClientID(string): "
-                   + "Sum(cents,5000-50000): " + "Sum(cents,5000-50000): " + "Sum(cents,5000-50000): " + "Sum(cents,5000-50000): "
-                   + "Term(days,7-30): " + "Term(days,7-30): " + "Term(days,7-30): " + "Term(days,7-30): "
+                   + "Sum(cents,5000-50000): " + "Sum(cents,5000-50000): " + "Sum(cents,5000-50000): " + "Sum(cents,5000-50000): " + "Sum(cents,5000-50000): "
+                   + "Term(days,7-30): " + "Term(days,7-30): " + "Term(days,7-30): " + "Term(days,7-30): " + "Term(days,7-30): "
                    + "Interest will be: 500\n"
-                   + "ClientIP(IPv4): " + "ClientIP(IPv4): " + "ClientIP(IPv4): "
+                   + "ClientIP(IPv4): " + "ClientIP(IPv4): " + "ClientIP(IPv4): " + "ClientIP(IPv4): "
                    + "Timestamp will be: 2001-02-03 04:05:06\n"
                    + "\n"
                    + "Created loan:\n"
@@ -133,7 +131,7 @@ public class CommandLineAppTest {
                    + "  * Application [id=456, loan=123, client=client_id, sum=10000, interest=500, termDays=15, ip=1.2.3.4, timestamp=2001-02-03 04:05:06]\n"
                    + "\n"
                    + "Time: 2001-02-03 04:05:06\n" + menuString
-            , outBytes.toString());
+            , output);
     }
     
     @Test
@@ -142,10 +140,10 @@ public class CommandLineAppTest {
         
         when(time.get()).thenReturn(timestamp);
         when(appServices.applyForLoan("client_id", 10000, 500, 15, "1.2.3.4", timestamp)).thenReturn(null);
-        makeInStream("apply\nclient_id\n10000\n15\n1.2.3.4\nexit\n");
         
-        CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
+        String output = runAppWith(input()
+            .enter("apply").enter("client_id").enter("10000").enter("15").enter("1.2.3.4")
+            .enter("exit"));
         
         verify(time, times(3)).get();
         verify(appServices, times(1)).applyForLoan("client_id", 10000, 500, 15, "1.2.3.4", timestamp);
@@ -162,7 +160,7 @@ public class CommandLineAppTest {
                    + "Loan denied!\n"
                    + "\n"
                    + "Time: 2001-02-03 04:05:06\n" + menuString
-            , outBytes.toString());
+            , output);
     }
     
     @Test
@@ -175,10 +173,8 @@ public class CommandLineAppTest {
         
         when(time.get()).thenReturn(timestamp);
         when(appServices.extendLoan(123, timestamp)).thenReturn(loan);
-        makeInStream("extend\n123\nexit\n");
         
-        CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
+        String output = runAppWith(input().enter("extend").enter("123").enter("exit"));
         
         verify(time, times(3)).get();
         verify(appServices, times(1)).extendLoan(123, timestamp);
@@ -194,7 +190,7 @@ public class CommandLineAppTest {
                    + "  + Extension [id=789, loan=123, extensionDays=7, addedInterest=250, timestamp=2001-02-03 04:05:06]\n"
                    + "\n"
                    + "Time: 2001-02-03 04:05:06\n" + menuString
-            , outBytes.toString());
+            , output);
     }
     
     @Test
@@ -207,17 +203,17 @@ public class CommandLineAppTest {
         
         when(time.get()).thenReturn(timestamp);
         when(appServices.extendLoan(123, timestamp)).thenReturn(loan);
-        makeInStream("extend\n\n0\n123\nexit\n");
         
-        CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
+        String output = runAppWith(input()
+            .enter("extend").enter("").enter("abc").enter("0").enter("123")
+            .enter("exit"));
         
         verify(time, times(3)).get();
         verify(appServices, times(1)).extendLoan(123, timestamp);
         verifyNoMoreInteractions(appServices, time);
         
         assertEquals("Time: 2001-02-03 04:05:06\n" + menuString
-                   + "LoanID(integer): " + "LoanID(integer): " + "LoanID(integer): "
+                   + "LoanID(integer): " + "LoanID(integer): " + "LoanID(integer): " + "LoanID(integer): "
                    + "Timestamp will be: 2001-02-03 04:05:06\n"
                    + "\n"
                    + "Extended loan:\n"
@@ -226,7 +222,7 @@ public class CommandLineAppTest {
                    + "  + Extension [id=789, loan=123, extensionDays=7, addedInterest=250, timestamp=2001-02-03 04:05:06]\n"
                    + "\n"
                    + "Time: 2001-02-03 04:05:06\n" + menuString
-            , outBytes.toString());
+            , output);
     }
     
     @Test
@@ -235,10 +231,8 @@ public class CommandLineAppTest {
         
         when(time.get()).thenReturn(timestamp);
         when(appServices.extendLoan(123, timestamp)).thenReturn(null);
-        makeInStream("extend\n123\nexit\n");
         
-        CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
+        String output = runAppWith(input().enter("extend").enter("123").enter("exit"));
         
         verify(time, times(3)).get();
         verify(appServices, times(1)).extendLoan(123, timestamp);
@@ -251,7 +245,7 @@ public class CommandLineAppTest {
                    + "Loan extension failed!\n"
                    + "\n"
                    + "Time: 2001-02-03 04:05:06\n" + menuString
-            , outBytes.toString());
+            , output);
     }
 
     @Test
@@ -267,10 +261,8 @@ public class CommandLineAppTest {
         
         when(time.get()).thenReturn(timestamp);
         when(appServices.listLoans("client_id")).thenReturn(loanList);
-        makeInStream("list\nclient_id\nexit\n");
         
-        CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
+        String output = runAppWith(input().enter("list").enter("client_id").enter("exit"));
         
         verify(time, times(2)).get();
         verify(appServices, times(1)).listLoans("client_id");
@@ -290,7 +282,7 @@ public class CommandLineAppTest {
                    + "  + Extension [id=987, loan=123, extensionDays=7, addedInterest=250, timestamp=2001-02-03 04:05:06]\n"
                    + "\n"
                    + "Time: 2001-02-03 04:05:06\n" + menuString
-            , outBytes.toString());
+            , output);
     }
     
     @Test
@@ -306,10 +298,8 @@ public class CommandLineAppTest {
         
         when(time.get()).thenReturn(timestamp);
         when(appServices.listLoans("client_id")).thenReturn(loanList);
-        makeInStream("list\n\nclient_id\nexit\n");
         
-        CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
+        String output = runAppWith(input().enter("list").enter("").enter("client_id").enter("exit"));
         
         verify(time, times(2)).get();
         verify(appServices, times(1)).listLoans("client_id");
@@ -329,7 +319,7 @@ public class CommandLineAppTest {
                    + "  + Extension [id=987, loan=123, extensionDays=7, addedInterest=250, timestamp=2001-02-03 04:05:06]\n"
                    + "\n"
                    + "Time: 2001-02-03 04:05:06\n" + menuString
-            , outBytes.toString());
+            , output);
     }
     
     @Test
@@ -337,11 +327,8 @@ public class CommandLineAppTest {
         LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
         
         when(time.get()).thenReturn(timestamp);
-        when(appServices.extendLoan(123, timestamp)).thenReturn(null);
-        makeInStream("skip\n123\nexit\n");
         
-        CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
+        String output = runAppWith(input().enter("skip").enter("123").enter("exit"));
         
         verify(time, times(2)).get();
         verify(time, times(1)).skipHours(123);
@@ -351,19 +338,19 @@ public class CommandLineAppTest {
                    + "Hours(0-999): "
                    + "\n"
                    + "Time: 2001-02-03 04:05:06\n" + menuString
-            , outBytes.toString());
+            , output);
     }
     
     @Test
     public void testSkipTypos() {
-        LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
+        LocalDateTime timestamp1 = new LocalDateTime(2001, 2, 3, 4, 5, 6);
+        LocalDateTime timestamp2 = new LocalDateTime(2001, 6, 5, 4, 3, 2);
         
-        when(time.get()).thenReturn(timestamp);
-        when(appServices.extendLoan(123, timestamp)).thenReturn(null);
-        makeInStream("skip\n\nabc\n-1\n1000\n123\nexit\n");
+        when(time.get()).thenReturn(timestamp1).thenReturn(timestamp2);
         
-        CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
+        String output = runAppWith(input()
+            .enter("skip").enter("").enter("abc").enter("-1").enter("1000").enter("123")
+            .enter("exit"));
         
         verify(time, times(2)).get();
         verify(time, times(1)).skipHours(123);
@@ -372,28 +359,45 @@ public class CommandLineAppTest {
         assertEquals("Time: 2001-02-03 04:05:06\n" + menuString
                    + "Hours(0-999): " + "Hours(0-999): " + "Hours(0-999): " + "Hours(0-999): " + "Hours(0-999): "
                    + "\n"
-                   + "Time: 2001-02-03 04:05:06\n" + menuString
-            , outBytes.toString());
+                   + "Time: 2001-06-05 04:03:02\n" + menuString
+            , output);
     }
     
     @Before
     public void setUp() {
         appServices = mock(AppServices.class);
         time = mock(Time.class);
-        in = null;
-        outBytes = new java.io.ByteArrayOutputStream();
-        out = new PrintStream(outBytes);
     }
     
-    private void makeInStream(String string) {
-        in = new BufferedReader(new StringReader(string));
+    private class Input {
+        public Input enter(String command) { input += command + "\n"; return this; }
+        public String string() { return input; }
+        private String input = "";
+    }
+    
+    private Input input() {
+        return new Input();
+    }
+    
+    private String runAppWith(Input input) {
+        BufferedReader in = new BufferedReader(new StringReader(input.string()));
+        
+        ByteArrayOutputStream outBytes = new java.io.ByteArrayOutputStream();
+        PrintStream out = new PrintStream(outBytes);
+        
+        CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
+        try {
+            cliApp.run();
+        }
+        catch ( IOException e ) {
+            assertTrue(false);
+        }
+        
+        return outBytes.toString();
     }
     
     private AppServices appServices;
     private Time time;
-    private BufferedReader in;
-    private ByteArrayOutputStream outBytes;
-    private PrintStream out;
     
     private final String menuString = ""
         + "Available commands:\n"

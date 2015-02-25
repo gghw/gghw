@@ -1,8 +1,8 @@
 package com.ff.gghw.models;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.joda.time.LocalDateTime;
+import static org.junit.Assert.*;
 
 import com.ff.gghw.models.ModelsTestBase;
 import com.ff.gghw.daos.ApplicationDao;
@@ -12,8 +12,8 @@ import com.ff.gghw.models.Loan;
 public class ApplicationTest extends ModelsTestBase {
     @Test
     public void testGetters() {
-        LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
         Loan l = newLoan();
+        LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
         Application a = new Application(1, l, "client_id", 10000, 1000, 30, "1.2.3.4", timestamp);
         
         assertEquals(1, a.getId());
@@ -23,23 +23,23 @@ public class ApplicationTest extends ModelsTestBase {
         assertEquals(1000, a.getInterest());
         assertEquals(30, a.getTermDays());
         assertEquals("1.2.3.4", a.getIp());
-        assertEquals(new LocalDateTime(2001, 2, 3, 4, 5, 6), a.getTimestamp());
+        assertSame(timestamp, a.getTimestamp());
     }
     
     @Test
     public void testSetters() {
-        LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
         Loan l = newLoan();
+        LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
         Application a = new Application();
         
-        a.setId(1);
-        a.setLoan(l);
-        a.setClient("client_id");
-        a.setSum(10000);
-        a.setInterest(1000);
-        a.setTermDays(30);
-        a.setIp("1.2.3.4");
-        a.setTimestamp(timestamp);
+        assertSame(a, a.setId(1));
+        assertSame(a, a.setLoan(l));
+        assertSame(a, a.setClient("client_id"));
+        assertSame(a, a.setSum(10000));
+        assertSame(a, a.setInterest(1000));
+        assertSame(a, a.setTermDays(30));
+        assertSame(a, a.setIp("1.2.3.4"));
+        assertSame(a, a.setTimestamp(timestamp));
         
         assertEquals(1, a.getId());
         assertSame(l, a.getLoan());
@@ -80,15 +80,13 @@ public class ApplicationTest extends ModelsTestBase {
         }
         {
             Application a1 = newApplication(newLoan());
-            Application a2 = newApplication(newLoan());
-            a2.setId(2);
+            Application a2 = newApplication(newLoan()).setId(2);
             assertNotEquals(a1, a2);
             assertNotEquals(a1.hashCode(), a2.hashCode());
         }
         {
             Application a1 = newApplication(newLoan());
-            Application a2 = newApplication(newLoan());
-            a2.getLoan().setId(2);
+            Application a2 = newApplication(newLoan().setId(2));
             assertNotEquals(a1, a2);
             assertNotEquals(a1.hashCode(), a2.hashCode());
         }
@@ -106,43 +104,37 @@ public class ApplicationTest extends ModelsTestBase {
         }
         {
             Application a1 = newApplication(newLoan());
-            Application a2 = newApplication(newLoan());
-            a2.setClient("id_client");
+            Application a2 = newApplication(newLoan()).setClient("id_client");
             assertNotEquals(a1, a2);
             assertNotEquals(a1.hashCode(), a2.hashCode());
         }
         {
             Application a1 = newApplication(newLoan());
-            Application a2 = newApplication(newLoan());
-            a2.setSum(10001);
+            Application a2 = newApplication(newLoan()).setSum(10001);
             assertNotEquals(a1, a2);
             assertNotEquals(a1.hashCode(), a2.hashCode());
         }
         {
             Application a1 = newApplication(newLoan());
-            Application a2 = newApplication(newLoan());
-            a2.setInterest(1001);
+            Application a2 = newApplication(newLoan()).setInterest(1001);
             assertNotEquals(a1, a2);
             assertNotEquals(a1.hashCode(), a2.hashCode());
         }
         {
             Application a1 = newApplication(newLoan());
-            Application a2 = newApplication(newLoan());
-            a2.setTermDays(31);
+            Application a2 = newApplication(newLoan()).setTermDays(31);
             assertNotEquals(a1, a2);
             assertNotEquals(a1.hashCode(), a2.hashCode());
         }
         {
             Application a1 = newApplication(newLoan());
-            Application a2 = newApplication(newLoan());
-            a2.setIp("1.2.3.5");
+            Application a2 = newApplication(newLoan()).setIp("1.2.3.5");
             assertNotEquals(a1, a2);
             assertNotEquals(a1.hashCode(), a2.hashCode());
         }
         {
             Application a1 = newApplication(newLoan());
-            Application a2 = newApplication(newLoan());
-            a2.setTimestamp(new LocalDateTime(2001, 2, 3, 4, 5, 7));
+            Application a2 = newApplication(newLoan()).setTimestamp(new LocalDateTime(2001, 2, 3, 4, 5, 7));
             assertNotEquals(a1, a2);
             assertNotEquals(a1.hashCode(), a2.hashCode());
         }
@@ -150,21 +142,17 @@ public class ApplicationTest extends ModelsTestBase {
     
     @Test
     public void testToString() {
-        LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
-        Application a = new Application(1, null, "client_id", 10000, 1000, 30, "1.2.3.4", timestamp);
-        Loan l = newLoan();
-        l.setId(2);
-        
+        Application a = newApplication(newLoan().setId(2));
         assertEquals(
-              "Application [id=1, loan=0, client=client_id, sum=10000, interest=1000, termDays=30, ip=1.2.3.4"
+              "Application [id=1, loan=2, client=client_id, sum=10000, interest=1000, termDays=30, ip=1.2.3.4"
               + ", timestamp=2001-02-03 04:05:06]"
             , "" + a);
         
-        a.setLoan(l);
+        a.setLoan(null);
         assertEquals(
-                "Application [id=1, loan=2, client=client_id, sum=10000, interest=1000, termDays=30, ip=1.2.3.4"
-                + ", timestamp=2001-02-03 04:05:06]"
-              , "" + a);
+              "Application [id=1, loan=-1, client=client_id, sum=10000, interest=1000, termDays=30, ip=1.2.3.4"
+              + ", timestamp=2001-02-03 04:05:06]"
+            , "" + a);
     }
 }
 

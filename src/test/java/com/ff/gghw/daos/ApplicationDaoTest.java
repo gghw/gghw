@@ -1,12 +1,9 @@
 package com.ff.gghw.daos;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
 import java.util.List;
-
+import org.junit.Test;
 import org.joda.time.LocalDateTime;
+import static org.junit.Assert.*;
 
 import com.ff.gghw.daos.DaosTestBase;
 import com.ff.gghw.daos.ApplicationDao;
@@ -40,8 +37,7 @@ public class ApplicationDaoTest extends DaosTestBase {
     
     @Test
     public void testFindByIdFail() {
-        Daos daos = newDaos();
-        Application a = daos.applicationDao.findById(1);
+        Application a = newDaos().applicationDao.findById(1);
         assertNull(a);
     }
     

@@ -1,12 +1,12 @@
 package com.ff.gghw.configs;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
-import static org.mockito.Mockito.*;
 import java.io.BufferedReader;
 import java.io.PrintStream;
+import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import com.ff.gghw.configs.ATestAppConfig;
 import com.ff.gghw.apps.CommandLineApp;
@@ -18,8 +18,8 @@ public class ATestAppConfigTest {
         PrintStream out = mock(PrintStream.class);
         
         ConfigurableApplicationContext appCtx = new AnnotationConfigApplicationContext(ATestAppConfig.class);
-        appCtx.getBeanFactory().registerSingleton("ccin", in);
-        appCtx.getBeanFactory().registerSingleton("ccout", out);
+        appCtx.getBeanFactory().registerSingleton("test_in", in);
+        appCtx.getBeanFactory().registerSingleton("test_out", out);
         
         CommandLineApp cliApp = appCtx.getBean("cliApp", CommandLineApp.class);
         assertNotNull(cliApp);
