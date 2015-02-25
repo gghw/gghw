@@ -42,15 +42,15 @@ public class ITestAppConfig extends AppConfigBase {
         properties.put("hibernate.show_sql", "false");
         properties.put("hibernate.format_sql", "false");
         properties.put("hibernate.hbm2ddl.auto", "create");
-        return properties;        
+        return properties;
     }
     
     @Bean
     @Autowired
     public HibernateTransactionManager transactionManager(SessionFactory sessionFactory) {
-       HibernateTransactionManager txManager = new HibernateTransactionManager();
-       txManager.setSessionFactory(sessionFactory);
-       return txManager;
+        HibernateTransactionManager txManager = new HibernateTransactionManager();
+        txManager.setSessionFactory(sessionFactory);
+        return txManager;
     }
     
     @Bean

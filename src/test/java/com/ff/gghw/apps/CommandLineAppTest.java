@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import org.joda.time.LocalDate;
@@ -28,7 +29,7 @@ public class CommandLineAppTest {
         makeInStream("exit\n");
         
         CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( Exception e ) { assertTrue(false); }
+        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
         
         verify(time, times(1)).get();
         verifyNoMoreInteractions(appServices, time);
@@ -42,7 +43,7 @@ public class CommandLineAppTest {
         makeInStream("\nexit\n");
         
         CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( Exception e ) { assertTrue(false); }
+        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
         
         verify(time, times(1)).get();
         verifyNoMoreInteractions(appServices, time);
@@ -56,7 +57,7 @@ public class CommandLineAppTest {
         makeInStream("bad\nexit\n");
         
         CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( Exception e ) { assertTrue(false); }
+        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
         
         verify(time, times(2)).get();
         verifyNoMoreInteractions(appServices, time);
@@ -72,22 +73,17 @@ public class CommandLineAppTest {
         LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
         LocalDate dueDate = new LocalDate(2001, 2, 18);
         Loan loan = new Loan(123, "client_id", 10000, 500, dueDate);
-        Application application = new Application(456, 123, "client_id", 10000, 500, 15, "1.2.3.4", timestamp);
-        List<Extension> extensionList = new ArrayList();
+        Application application = new Application(456, loan, "client_id", 10000, 500, 15, "1.2.3.4", timestamp);
         
         when(time.get()).thenReturn(timestamp);
         when(appServices.applyForLoan("client_id", 10000, 500, 15, "1.2.3.4", timestamp)).thenReturn(loan);
-        when(appServices.getLoanApplication(123)).thenReturn(application);
-        when(appServices.listLoanExtensions(123)).thenReturn(extensionList);
         makeInStream("apply\nclient_id\n10000\n15\n1.2.3.4\nexit\n");
         
         CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( Exception e ) { assertTrue(false); }
+        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
         
         verify(time, times(3)).get();
         verify(appServices, times(1)).applyForLoan("client_id", 10000, 500, 15, "1.2.3.4", timestamp);
-        verify(appServices, times(1)).getLoanApplication(123);
-        verify(appServices, times(1)).listLoanExtensions(123);
         verifyNoMoreInteractions(appServices, time);
         
         assertEquals("Time: 2001-02-03 04:05:06\n" + menuString
@@ -99,7 +95,7 @@ public class CommandLineAppTest {
                    + "Timestamp will be: 2001-02-03 04:05:06\n"
                    + "\n"
                    + "Created loan:\n"
-                   + "Loan [id=123, client=client_id, sum=10000, interest=500, dueDate=2001-02-18]\n"
+                   + "Loan [id=123, client=client_id, sum=10000, interest=500, dueDate=2001-02-18, application=456, extensions=()]\n"
                    + "  * Application [id=456, loan=123, client=client_id, sum=10000, interest=500, termDays=15, ip=1.2.3.4, timestamp=2001-02-03 04:05:06]\n"
                    + "\n"
                    + "Time: 2001-02-03 04:05:06\n" + menuString
@@ -111,22 +107,17 @@ public class CommandLineAppTest {
         LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
         LocalDate dueDate = new LocalDate(2001, 2, 18);
         Loan loan = new Loan(123, "client_id", 10000, 500, dueDate);
-        Application application = new Application(456, 123, "client_id", 10000, 500, 15, "1.2.3.4", timestamp);
-        List<Extension> extensionList = new ArrayList();
+        Application application = new Application(456, loan, "client_id", 10000, 500, 15, "1.2.3.4", timestamp);
         
         when(time.get()).thenReturn(timestamp);
         when(appServices.applyForLoan("client_id", 10000, 500, 15, "1.2.3.4", timestamp)).thenReturn(loan);
-        when(appServices.getLoanApplication(123)).thenReturn(application);
-        when(appServices.listLoanExtensions(123)).thenReturn(extensionList);
         makeInStream("apply\n\nclient_id\n\n4999\n50001\n10000\n\n6\n31\n15\n\n1234\n1.2.3.4\nexit\n");
         
         CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( Exception e ) { assertTrue(false); }
+        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
         
         verify(time, times(3)).get();
         verify(appServices, times(1)).applyForLoan("client_id", 10000, 500, 15, "1.2.3.4", timestamp);
-        verify(appServices, times(1)).getLoanApplication(123);
-        verify(appServices, times(1)).listLoanExtensions(123);
         verifyNoMoreInteractions(appServices, time);
         
         assertEquals("Time: 2001-02-03 04:05:06\n" + menuString
@@ -138,7 +129,7 @@ public class CommandLineAppTest {
                    + "Timestamp will be: 2001-02-03 04:05:06\n"
                    + "\n"
                    + "Created loan:\n"
-                   + "Loan [id=123, client=client_id, sum=10000, interest=500, dueDate=2001-02-18]\n"
+                   + "Loan [id=123, client=client_id, sum=10000, interest=500, dueDate=2001-02-18, application=456, extensions=()]\n"
                    + "  * Application [id=456, loan=123, client=client_id, sum=10000, interest=500, termDays=15, ip=1.2.3.4, timestamp=2001-02-03 04:05:06]\n"
                    + "\n"
                    + "Time: 2001-02-03 04:05:06\n" + menuString
@@ -154,7 +145,7 @@ public class CommandLineAppTest {
         makeInStream("apply\nclient_id\n10000\n15\n1.2.3.4\nexit\n");
         
         CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( Exception e ) { assertTrue(false); }
+        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
         
         verify(time, times(3)).get();
         verify(appServices, times(1)).applyForLoan("client_id", 10000, 500, 15, "1.2.3.4", timestamp);
@@ -177,50 +168,28 @@ public class CommandLineAppTest {
     @Test
     public void testExtend() {
         LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
-        LocalDate dueDate1 = new LocalDate(2001, 2, 18);
-        LocalDate dueDate2 = new LocalDate(2001, 2, 25);
-        Loan loan1 = new Loan(123, "client_id", 10000, 500, dueDate1);
-        Loan loan2 = new Loan(123, "client_id", 10000, 750, dueDate2);
-        Application application = new Application(456, 123, "client_id", 10000, 500, 15, "1.2.3.4", timestamp);
-        Extension extension = new Extension(789, 123, 7, 250, timestamp);
-        List<Extension> extensionList0 = new ArrayList();
-        List<Extension> extensionList1 = new ArrayList(); extensionList1.add(extension);
+        LocalDate dueDate = new LocalDate(2001, 2, 25);
+        Loan loan = new Loan(123, "client_id", 10000, 750, dueDate);
+        Application application = new Application(456, loan, "client_id", 10000, 500, 15, "1.2.3.4", timestamp);
+        Extension extension = new Extension(789, loan, 7, 250, timestamp);
         
         when(time.get()).thenReturn(timestamp);
-        when(appServices.applyForLoan("client_id", 10000, 500, 15, "1.2.3.4", timestamp)).thenReturn(loan1);
-        when(appServices.extendLoan(123, timestamp)).thenReturn(loan2);
-        when(appServices.getLoanApplication(123)).thenReturn(application);
-        when(appServices.listLoanExtensions(123)).thenReturn(extensionList0).thenReturn(extensionList1);
-        makeInStream("apply\nclient_id\n10000\n15\n1.2.3.4\nextend\n123\nexit\n");
+        when(appServices.extendLoan(123, timestamp)).thenReturn(loan);
+        makeInStream("extend\n123\nexit\n");
         
         CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( Exception e ) { assertTrue(false); }
+        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
         
-        verify(time, times(5)).get();
-        verify(appServices, times(1)).applyForLoan("client_id", 10000, 500, 15, "1.2.3.4", timestamp);
+        verify(time, times(3)).get();
         verify(appServices, times(1)).extendLoan(123, timestamp);
-        verify(appServices, times(2)).getLoanApplication(123);
-        verify(appServices, times(2)).listLoanExtensions(123);
         verifyNoMoreInteractions(appServices, time);
         
         assertEquals("Time: 2001-02-03 04:05:06\n" + menuString
-                   + "ClientID(string): "
-                   + "Sum(cents,5000-50000): "
-                   + "Term(days,7-30): "
-                   + "Interest will be: 500\n"
-                   + "ClientIP(IPv4): "
-                   + "Timestamp will be: 2001-02-03 04:05:06\n"
-                   + "\n"
-                   + "Created loan:\n"
-                   + "Loan [id=123, client=client_id, sum=10000, interest=500, dueDate=2001-02-18]\n"
-                   + "  * Application [id=456, loan=123, client=client_id, sum=10000, interest=500, termDays=15, ip=1.2.3.4, timestamp=2001-02-03 04:05:06]\n"
-                   + "\n"
-                   + "Time: 2001-02-03 04:05:06\n" + menuString
                    + "LoanID(integer): "
                    + "Timestamp will be: 2001-02-03 04:05:06\n"
                    + "\n"
                    + "Extended loan:\n"
-                   + "Loan [id=123, client=client_id, sum=10000, interest=750, dueDate=2001-02-25]\n"
+                   + "Loan [id=123, client=client_id, sum=10000, interest=750, dueDate=2001-02-25, application=456, extensions=(789)]\n"
                    + "  * Application [id=456, loan=123, client=client_id, sum=10000, interest=500, termDays=15, ip=1.2.3.4, timestamp=2001-02-03 04:05:06]\n"
                    + "  + Extension [id=789, loan=123, extensionDays=7, addedInterest=250, timestamp=2001-02-03 04:05:06]\n"
                    + "\n"
@@ -231,50 +200,28 @@ public class CommandLineAppTest {
     @Test
     public void testExtendTypos() {
         LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
-        LocalDate dueDate1 = new LocalDate(2001, 2, 18);
-        LocalDate dueDate2 = new LocalDate(2001, 2, 25);
-        Loan loan1 = new Loan(123, "client_id", 10000, 500, dueDate1);
-        Loan loan2 = new Loan(123, "client_id", 10000, 750, dueDate2);
-        Application application = new Application(456, 123, "client_id", 10000, 500, 15, "1.2.3.4", timestamp);
-        Extension extension = new Extension(789, 123, 7, 250, timestamp);
-        List<Extension> extensionList0 = new ArrayList();
-        List<Extension> extensionList1 = new ArrayList(); extensionList1.add(extension);
+        LocalDate dueDate = new LocalDate(2001, 2, 25);
+        Loan loan = new Loan(123, "client_id", 10000, 750, dueDate);
+        Application application = new Application(456, loan, "client_id", 10000, 500, 15, "1.2.3.4", timestamp);
+        Extension extension = new Extension(789, loan, 7, 250, timestamp);
         
         when(time.get()).thenReturn(timestamp);
-        when(appServices.applyForLoan("client_id", 10000, 500, 15, "1.2.3.4", timestamp)).thenReturn(loan1);
-        when(appServices.extendLoan(123, timestamp)).thenReturn(loan2);
-        when(appServices.getLoanApplication(123)).thenReturn(application);
-        when(appServices.listLoanExtensions(123)).thenReturn(extensionList0).thenReturn(extensionList1);
-        makeInStream("apply\nclient_id\n10000\n15\n1.2.3.4\nextend\n0\n\n123\nexit\n");
+        when(appServices.extendLoan(123, timestamp)).thenReturn(loan);
+        makeInStream("extend\n\n0\n123\nexit\n");
         
         CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( Exception e ) { assertTrue(false); }
+        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
         
-        verify(time, times(5)).get();
-        verify(appServices, times(1)).applyForLoan("client_id", 10000, 500, 15, "1.2.3.4", timestamp);
+        verify(time, times(3)).get();
         verify(appServices, times(1)).extendLoan(123, timestamp);
-        verify(appServices, times(2)).getLoanApplication(123);
-        verify(appServices, times(2)).listLoanExtensions(123);
         verifyNoMoreInteractions(appServices, time);
         
         assertEquals("Time: 2001-02-03 04:05:06\n" + menuString
-                   + "ClientID(string): "
-                   + "Sum(cents,5000-50000): "
-                   + "Term(days,7-30): "
-                   + "Interest will be: 500\n"
-                   + "ClientIP(IPv4): "
-                   + "Timestamp will be: 2001-02-03 04:05:06\n"
-                   + "\n"
-                   + "Created loan:\n"
-                   + "Loan [id=123, client=client_id, sum=10000, interest=500, dueDate=2001-02-18]\n"
-                   + "  * Application [id=456, loan=123, client=client_id, sum=10000, interest=500, termDays=15, ip=1.2.3.4, timestamp=2001-02-03 04:05:06]\n"
-                   + "\n"
-                   + "Time: 2001-02-03 04:05:06\n" + menuString
                    + "LoanID(integer): " + "LoanID(integer): " + "LoanID(integer): "
                    + "Timestamp will be: 2001-02-03 04:05:06\n"
                    + "\n"
                    + "Extended loan:\n"
-                   + "Loan [id=123, client=client_id, sum=10000, interest=750, dueDate=2001-02-25]\n"
+                   + "Loan [id=123, client=client_id, sum=10000, interest=750, dueDate=2001-02-25, application=456, extensions=(789)]\n"
                    + "  * Application [id=456, loan=123, client=client_id, sum=10000, interest=500, termDays=15, ip=1.2.3.4, timestamp=2001-02-03 04:05:06]\n"
                    + "  + Extension [id=789, loan=123, extensionDays=7, addedInterest=250, timestamp=2001-02-03 04:05:06]\n"
                    + "\n"
@@ -291,7 +238,7 @@ public class CommandLineAppTest {
         makeInStream("extend\n123\nexit\n");
         
         CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( Exception e ) { assertTrue(false); }
+        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
         
         verify(time, times(3)).get();
         verify(appServices, times(1)).extendLoan(123, timestamp);
@@ -312,38 +259,35 @@ public class CommandLineAppTest {
         LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
         LocalDate dueDate = new LocalDate(2001, 2, 25);
         Loan loan = new Loan(123, "client_id", 10000, 750, dueDate);
-        Application application = new Application(456, 123, "client_id", 10000, 250, 8, "1.2.3.4", timestamp);
-        Extension extension = new Extension(789, 123, 7, 250, timestamp);
+        Application application = new Application(456, loan, "client_id", 10000, 250, 8, "1.2.3.4", timestamp);
+        Extension extension1 = new Extension(789, null, 7, 250, timestamp);
+        Extension extension2 = new Extension(987, null, 7, 250, timestamp);
         List<Loan> loanList = new ArrayList(); loanList.add(loan); loanList.add(loan);
-        List<Extension> extensionList = new ArrayList(); extensionList.add(extension); extensionList.add(extension);
+        loan.addExtension(extension1); loan.addExtension(extension2);
         
         when(time.get()).thenReturn(timestamp);
         when(appServices.listLoans("client_id")).thenReturn(loanList);
-        when(appServices.getLoanApplication(123)).thenReturn(application);
-        when(appServices.listLoanExtensions(123)).thenReturn(extensionList);
         makeInStream("list\nclient_id\nexit\n");
         
         CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( Exception e ) { assertTrue(false); }
+        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
         
         verify(time, times(2)).get();
         verify(appServices, times(1)).listLoans("client_id");
-        verify(appServices, times(2)).getLoanApplication(123);
-        verify(appServices, times(2)).listLoanExtensions(123);
         verifyNoMoreInteractions(appServices, time);
         
         assertEquals("Time: 2001-02-03 04:05:06\n" + menuString
                    + "ClientID(string): "
                    + "\n"
                    + "Listing loans:\n"
-                   + "Loan [id=123, client=client_id, sum=10000, interest=750, dueDate=2001-02-25]\n"
+                   + "Loan [id=123, client=client_id, sum=10000, interest=750, dueDate=2001-02-25, application=456, extensions=(789,987)]\n"
                    + "  * Application [id=456, loan=123, client=client_id, sum=10000, interest=250, termDays=8, ip=1.2.3.4, timestamp=2001-02-03 04:05:06]\n"
                    + "  + Extension [id=789, loan=123, extensionDays=7, addedInterest=250, timestamp=2001-02-03 04:05:06]\n"
-                   + "  + Extension [id=789, loan=123, extensionDays=7, addedInterest=250, timestamp=2001-02-03 04:05:06]\n"
-                   + "Loan [id=123, client=client_id, sum=10000, interest=750, dueDate=2001-02-25]\n"
+                   + "  + Extension [id=987, loan=123, extensionDays=7, addedInterest=250, timestamp=2001-02-03 04:05:06]\n"
+                   + "Loan [id=123, client=client_id, sum=10000, interest=750, dueDate=2001-02-25, application=456, extensions=(789,987)]\n"
                    + "  * Application [id=456, loan=123, client=client_id, sum=10000, interest=250, termDays=8, ip=1.2.3.4, timestamp=2001-02-03 04:05:06]\n"
                    + "  + Extension [id=789, loan=123, extensionDays=7, addedInterest=250, timestamp=2001-02-03 04:05:06]\n"
-                   + "  + Extension [id=789, loan=123, extensionDays=7, addedInterest=250, timestamp=2001-02-03 04:05:06]\n"
+                   + "  + Extension [id=987, loan=123, extensionDays=7, addedInterest=250, timestamp=2001-02-03 04:05:06]\n"
                    + "\n"
                    + "Time: 2001-02-03 04:05:06\n" + menuString
             , outBytes.toString());
@@ -354,38 +298,35 @@ public class CommandLineAppTest {
         LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
         LocalDate dueDate = new LocalDate(2001, 2, 25);
         Loan loan = new Loan(123, "client_id", 10000, 750, dueDate);
-        Application application = new Application(456, 123, "client_id", 10000, 250, 8, "1.2.3.4", timestamp);
-        Extension extension = new Extension(789, 123, 7, 250, timestamp);
+        Application application = new Application(456, loan, "client_id", 10000, 250, 8, "1.2.3.4", timestamp);
+        Extension extension1 = new Extension(789, null, 7, 250, timestamp);
+        Extension extension2 = new Extension(987, null, 7, 250, timestamp);
         List<Loan> loanList = new ArrayList(); loanList.add(loan); loanList.add(loan);
-        List<Extension> extensionList = new ArrayList(); extensionList.add(extension); extensionList.add(extension);
+        loan.addExtension(extension1); loan.addExtension(extension2);
         
         when(time.get()).thenReturn(timestamp);
         when(appServices.listLoans("client_id")).thenReturn(loanList);
-        when(appServices.getLoanApplication(123)).thenReturn(application);
-        when(appServices.listLoanExtensions(123)).thenReturn(extensionList);
         makeInStream("list\n\nclient_id\nexit\n");
         
         CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( Exception e ) { assertTrue(false); }
+        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
         
         verify(time, times(2)).get();
         verify(appServices, times(1)).listLoans("client_id");
-        verify(appServices, times(2)).getLoanApplication(123);
-        verify(appServices, times(2)).listLoanExtensions(123);
         verifyNoMoreInteractions(appServices, time);
         
         assertEquals("Time: 2001-02-03 04:05:06\n" + menuString
                    + "ClientID(string): " + "ClientID(string): "
                    + "\n"
                    + "Listing loans:\n"
-                   + "Loan [id=123, client=client_id, sum=10000, interest=750, dueDate=2001-02-25]\n"
+                   + "Loan [id=123, client=client_id, sum=10000, interest=750, dueDate=2001-02-25, application=456, extensions=(789,987)]\n"
                    + "  * Application [id=456, loan=123, client=client_id, sum=10000, interest=250, termDays=8, ip=1.2.3.4, timestamp=2001-02-03 04:05:06]\n"
                    + "  + Extension [id=789, loan=123, extensionDays=7, addedInterest=250, timestamp=2001-02-03 04:05:06]\n"
-                   + "  + Extension [id=789, loan=123, extensionDays=7, addedInterest=250, timestamp=2001-02-03 04:05:06]\n"
-                   + "Loan [id=123, client=client_id, sum=10000, interest=750, dueDate=2001-02-25]\n"
+                   + "  + Extension [id=987, loan=123, extensionDays=7, addedInterest=250, timestamp=2001-02-03 04:05:06]\n"
+                   + "Loan [id=123, client=client_id, sum=10000, interest=750, dueDate=2001-02-25, application=456, extensions=(789,987)]\n"
                    + "  * Application [id=456, loan=123, client=client_id, sum=10000, interest=250, termDays=8, ip=1.2.3.4, timestamp=2001-02-03 04:05:06]\n"
                    + "  + Extension [id=789, loan=123, extensionDays=7, addedInterest=250, timestamp=2001-02-03 04:05:06]\n"
-                   + "  + Extension [id=789, loan=123, extensionDays=7, addedInterest=250, timestamp=2001-02-03 04:05:06]\n"
+                   + "  + Extension [id=987, loan=123, extensionDays=7, addedInterest=250, timestamp=2001-02-03 04:05:06]\n"
                    + "\n"
                    + "Time: 2001-02-03 04:05:06\n" + menuString
             , outBytes.toString());
@@ -400,7 +341,7 @@ public class CommandLineAppTest {
         makeInStream("skip\n123\nexit\n");
         
         CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( Exception e ) { assertTrue(false); }
+        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
         
         verify(time, times(2)).get();
         verify(time, times(1)).skipHours(123);
@@ -422,7 +363,7 @@ public class CommandLineAppTest {
         makeInStream("skip\n\nabc\n-1\n1000\n123\nexit\n");
         
         CommandLineApp cliApp = new CommandLineApp(appServices, time, in, out);
-        try { cliApp.run(); } catch ( Exception e ) { assertTrue(false); }
+        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
         
         verify(time, times(2)).get();
         verify(time, times(1)).skipHours(123);

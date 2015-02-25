@@ -2,14 +2,18 @@ package com.ff.gghw.models;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import com.ff.gghw.models.Loan;
 import com.ff.gghw.etc.Time;
 import com.ff.gghw.etc.Helpers;
 
@@ -18,26 +22,30 @@ import com.ff.gghw.etc.Helpers;
 public class Extension {
     public Extension() {
         this.id = 0;
-        this.loan = 0;
+        this.loan = null;
         this.extensionDays = 0;
         this.addedInterest = 0;
         this.timestamp = null;
     }
     
-    public Extension(int id, int loan, int extensionDays, int addedInterest, LocalDateTime timestamp) {
+    public Extension(int id, Loan loan, int extensionDays, int addedInterest, LocalDateTime timestamp) {
         this.id = id;
         this.loan = loan;
         this.extensionDays = extensionDays;
         this.addedInterest = addedInterest;
         this.timestamp = timestamp;
+        if ( loan != null ) {
+            this.loan.addExtension(this);
+        }
     }
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     
-    @Column(name = "loan", nullable = false)
-    private int loan;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "loan", nullable = false)
+    private Loan loan;
     
     @Column(name = "extension_days", nullable = false)
     private int extensionDays;
@@ -52,8 +60,8 @@ public class Extension {
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     
-    public int getLoan() { return loan; }
-    public void setLoan(int loan) { this.loan = loan; }
+    public Loan getLoan() { return loan; }
+    public void setLoan(Loan loan) { this.loan = loan; }
     
     public int getExtensionDays() { return extensionDays; }
     public void setExtensionDays(int extensionDays) { this.extensionDays = extensionDays; }
@@ -67,7 +75,8 @@ public class Extension {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(13, 43)
-            .append(id).append(loan).append(extensionDays).append(addedInterest).append(timestamp)
+            .append(id).append((loan == null ? 0 : loan.getId()))
+            .append(extensionDays).append(addedInterest).append(timestamp)
             .toHashCode();
     }
     
@@ -78,7 +87,7 @@ public class Extension {
         if ( !(obj instanceof Extension) ) return false;
         Extension other = (Extension) obj;
         if ( id != other.id ) return false;
-        if ( loan != other.loan ) return false;
+        if ( (loan == null ? 0 : loan.getId()) != (other.loan == null ? 0 : other.loan.getId()) ) return false;
         if ( extensionDays != other.extensionDays ) return false;
         if ( addedInterest != other.addedInterest ) return false;
         if ( !Helpers.objectsEqual(timestamp, other.timestamp) ) return false;
@@ -87,8 +96,9 @@ public class Extension {
     
     @Override
     public String toString() {
-        return "Extension [id=" + id + ", loan=" + loan + ", extensionDays=" + extensionDays
-            + ", addedInterest=" + addedInterest + ", timestamp=" + Time.format(timestamp) + "]";
+        return "Extension [id=" + id + ", loan=" + (loan == null ? 0 : loan.getId())
+            + ", extensionDays=" + extensionDays + ", addedInterest=" + addedInterest
+            + ", timestamp=" + Time.format(timestamp) + "]";
     }
 }
 

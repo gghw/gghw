@@ -2,10 +2,13 @@ package com.ff.gghw.models;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Table;
+import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -18,7 +21,7 @@ import com.ff.gghw.etc.Helpers;
 public class Application {
     public Application() {
         this.id = 0;
-        this.loan = 0;
+        this.loan = null;
         this.client = null;
         this.sum = 0;
         this.interest = 0;
@@ -27,7 +30,7 @@ public class Application {
         this.timestamp = null;
     }
     
-    public Application(int id, int loan, String client, int sum, int interest
+    public Application(int id, Loan loan, String client, int sum, int interest
             , int termDays, String ip, LocalDateTime timestamp) {
         this.id = id;
         this.loan = loan;
@@ -37,14 +40,18 @@ public class Application {
         this.termDays = termDays;
         this.ip = ip;
         this.timestamp = timestamp;
+        if ( this.loan != null ) {
+            loan.setApplication(this);
+        }
     }
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     
-    @Column(name = "loan", nullable = false)
-    private int loan;
+    @OneToOne
+    @JoinColumn(name = "loan", nullable = false)
+    private Loan loan;
     
     @Column(name = "client", nullable = false)
     private String client;
@@ -68,8 +75,8 @@ public class Application {
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     
-    public int getLoan() { return loan; }
-    public void setLoan(int loan) { this.loan = loan; }
+    public Loan getLoan() { return loan; }
+    public void setLoan(Loan loan) { this.loan = loan; }
     
     public String getClient() { return client; }
     public void setClient(String client) { this.client = client; }
@@ -92,7 +99,7 @@ public class Application {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 31)
-            .append(id).append(loan).append(client).append(sum)
+            .append(id).append(loan != null ? loan.getId() : 0).append(client).append(sum)
             .append(interest).append(termDays).append(ip).append(timestamp)
             .toHashCode();
     }
@@ -104,7 +111,7 @@ public class Application {
         if ( !(obj instanceof Application) ) return false;
         Application other = (Application) obj;
         if ( id != other.id ) return false;
-        if ( loan != other.loan ) return false;
+        if ( (loan != null ? loan.getId() : 0) != (other.loan != null ? other.loan.getId() : 0) ) return false;
         if ( !Helpers.objectsEqual(client, other.client) ) return false;
         if ( sum != other.sum ) return false;
         if ( interest != other.interest ) return false;
@@ -116,7 +123,9 @@ public class Application {
     
     @Override
     public String toString() {
-        return "Application [id=" + id + ", loan=" + loan + ", client=" + client + ", sum=" + sum
+        return "Application [id=" + id
+            + ", loan=" + (loan != null ? loan.getId() : 0)
+            + ", client=" + client + ", sum=" + sum
             + ", interest=" + interest + ", termDays=" + termDays + ", ip=" + ip
             + ", timestamp=" + Time.format(timestamp) + "]";
     }

@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.io.IOException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -56,7 +57,7 @@ public class StepDefinitions {
         appCtx.getBeanFactory().registerSingleton("ccout", out);
         
         CommandLineApp cliApp = appCtx.getBean("cliApp", CommandLineApp.class);
-        try { cliApp.run(); } catch ( Exception e ) { assertTrue(false); }
+        try { cliApp.run(); } catch ( IOException e ) { assertTrue(false); }
         
         String output = outBytes.toString();
         

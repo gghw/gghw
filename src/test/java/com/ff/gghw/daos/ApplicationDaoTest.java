@@ -1,28 +1,35 @@
-package com.ff.gghw.models;
+package com.ff.gghw.daos;
 
 import static org.junit.Assert.*;
+
 import org.junit.Test;
+
 import java.util.List;
+
 import org.joda.time.LocalDateTime;
 
-import com.ff.gghw.TestBase;
+import com.ff.gghw.daos.DaosTestBase;
 import com.ff.gghw.daos.ApplicationDao;
 import com.ff.gghw.models.Application;
+import com.ff.gghw.models.Loan;
 
-public class ApplicationDaoTest extends TestBase {
+public class ApplicationDaoTest extends DaosTestBase {
     @Test
     public void testInsertAndFindById() {
-        LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
-        ApplicationDao dao = newCtx().getBean("applicationDao", ApplicationDao.class);
-        Application a = new Application(0, 2, "client_id", 10000, 1000, 30, "1.2.3.4", timestamp);
+        Daos daos = newDaos();
         
-        dao.insert(a);
+        LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
+        Loan l = newLoan();
+        Application a = new Application(0, l, "client_id", 10000, 1000, 30, "1.2.3.4", timestamp);
+        
+        daos.loanDao.insert(l);
+        daos.applicationDao.insert(a);
         assertEquals(1, a.getId());
         
-        a = dao.findById(1);
+        a = daos.applicationDao.findById(1);
         assertNotNull(a);
         assertEquals(1, a.getId());
-        assertEquals(2, a.getLoan());
+        assertEquals(l, a.getLoan());
         assertEquals("client_id", a.getClient());
         assertEquals(10000, a.getSum());
         assertEquals(1000, a.getInterest());
@@ -32,88 +39,38 @@ public class ApplicationDaoTest extends TestBase {
     }
     
     @Test
-    public void testUpdate() {
-        LocalDateTime timestamp1 = new LocalDateTime(2001, 2, 3, 4, 5, 6);
-        LocalDateTime timestamp2 = new LocalDateTime(2001, 2, 3, 4, 5, 7);
-        ApplicationDao dao = newCtx().getBean("applicationDao", ApplicationDao.class);
-        Application a = new Application(0, 2, "client_id", 10000, 1000, 30, "1.2.3.4", timestamp1);
-        dao.insert(a);
-        
-        a.setLoan(3);
-        a.setClient("id_client");
-        a.setSum(10001);
-        a.setInterest(1001);
-        a.setTermDays(31);
-        a.setIp("2.3.4.5");
-        a.setTimestamp(timestamp2);
-        dao.update(a);
-        assertEquals(1, a.getId());
-        
-        a = dao.findById(1);
-        assertNotNull(a);
-        assertEquals(1, a.getId());
-        assertEquals(3, a.getLoan());
-        assertEquals("id_client", a.getClient());
-        assertEquals(10001, a.getSum());
-        assertEquals(1001, a.getInterest());
-        assertEquals(31, a.getTermDays());
-        assertEquals("2.3.4.5", a.getIp());
-        assertEquals(timestamp2, a.getTimestamp());
-    }
-    
-    @Test
     public void testFindByIdFail() {
-        ApplicationDao dao = newCtx().getBean("applicationDao", ApplicationDao.class);
-        Application a = dao.findById(1);
+        Daos daos = newDaos();
+        Application a = daos.applicationDao.findById(1);
         assertNull(a);
-    }
-    
-    @Test
-    public void testFindByLoan() {
-        LocalDateTime timestamp = new LocalDateTime(2001, 2, 3, 4, 5, 6);
-        ApplicationDao dao = newCtx().getBean("applicationDao", ApplicationDao.class);
-        Application a = new Application(0, 2, "client_id", 10000, 1000, 30, "1.2.3.4", timestamp);
-        
-        dao.insert(a);
-        assertEquals(1, a.getId());
-        
-        a = dao.findByLoan(1);
-        assertNull(a);
-        
-        a = dao.findByLoan(2);
-        assertNotNull(a);
-        assertEquals(1, a.getId());
     }
     
     @Test
     public void testCountSinceWithIp() {
+        Daos daos = newDaos();
+        
         LocalDateTime timestamp1 = new LocalDateTime(2001, 2, 3, 4, 0, 0);
         LocalDateTime timestamp2 = new LocalDateTime(2001, 2, 3, 5, 0, 0);
         LocalDateTime timestamp3 = new LocalDateTime(2001, 2, 3, 6, 0, 0);
         LocalDateTime timestamp4 = new LocalDateTime(2001, 2, 3, 7, 0, 0);
-        ApplicationDao dao = newCtx().getBean("applicationDao", ApplicationDao.class);
-        Application a = new Application(0, 2, "client_id", 10000, 1000, 30, "1.2.3.4", null);
+        Application a1 = new Application(0, newLoan(), "client_id", 10000, 1000, 30, "1.2.3.4", timestamp1);
+        Application a2 = new Application(0, newLoan(), "client_id", 10000, 1000, 30, "1.2.3.4", timestamp2);
+        Application a3 = new Application(0, newLoan(), "client_id", 10000, 1000, 30, "1.2.3.4", timestamp3);
+        Application a4 = new Application(0, newLoan(), "client_id", 10000, 1000, 30, "1.2.3.5", timestamp4);
         
-        a.setTimestamp(timestamp1);
-        dao.insert(a);
+        daos.loanDao.insert(a1.getLoan());
+        daos.applicationDao.insert(a1);
+        daos.loanDao.insert(a2.getLoan());
+        daos.applicationDao.insert(a2);
+        daos.loanDao.insert(a3.getLoan());
+        daos.applicationDao.insert(a3);
+        daos.loanDao.insert(a4.getLoan());
+        daos.applicationDao.insert(a4);
         
-        a.setId(0);
-        a.setTimestamp(timestamp2);
-        dao.insert(a);
-        
-        a.setId(0);
-        a.setTimestamp(timestamp3);
-        dao.insert(a);
-        
-        a.setId(0);
-        a.setIp("2.3.4.5");
-        a.setTimestamp(timestamp4);
-        dao.insert(a);
-        
-        assertEquals(3, dao.countSinceWithIp(timestamp1, "1.2.3.4"));
-        assertEquals(2, dao.countSinceWithIp(timestamp2, "1.2.3.4"));
-        assertEquals(1, dao.countSinceWithIp(timestamp3, "1.2.3.4"));
-        assertEquals(0, dao.countSinceWithIp(timestamp4, "1.2.3.4"));
+        assertEquals(3, daos.applicationDao.countSinceWithIp(timestamp1, "1.2.3.4"));
+        assertEquals(2, daos.applicationDao.countSinceWithIp(timestamp2, "1.2.3.4"));
+        assertEquals(1, daos.applicationDao.countSinceWithIp(timestamp3, "1.2.3.4"));
+        assertEquals(0, daos.applicationDao.countSinceWithIp(timestamp4, "1.2.3.4"));
     }
 }
 

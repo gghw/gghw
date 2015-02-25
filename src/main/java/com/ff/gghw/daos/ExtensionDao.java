@@ -25,11 +25,5 @@ public class ExtensionDao extends BaseDao {
         criteria.add(Restrictions.eq("id", id));
         return (Extension) criteria.uniqueResult();
     }
-    
-    public List<Extension> findByLoan(int loan) {
-        Criteria criteria = getSession().createCriteria(Extension.class);
-        criteria.add(Restrictions.eq("loan", loan));
-        return (List<Extension>) criteria.list();
-    }
 }
 

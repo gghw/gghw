@@ -23,19 +23,9 @@ public class ApplicationDao extends BaseDao {
         persistObject(application);
     }
     
-    public void update(Application application) {
-        updateObject(application);
-    }
-    
     public Application findById(int id) {
         Criteria criteria = getSession().createCriteria(Application.class);
         criteria.add(Restrictions.eq("id", id));
-        return (Application) criteria.uniqueResult();
-    }
-    
-    public Application findByLoan(int loan) {
-        Criteria criteria = getSession().createCriteria(Application.class);
-        criteria.add(Restrictions.eq("loan", loan));
         return (Application) criteria.uniqueResult();
     }
     

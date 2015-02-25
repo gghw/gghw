@@ -26,7 +26,7 @@ public class AppConfigTempDB extends AppConfigBase {
         dataSource.setUrl("jdbc:h2:mem:test;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1");
         return dataSource;
     }
-
+    
     @Bean
     @Autowired
     public LocalSessionFactoryBean sessionFactory(DataSource dataSource) {
@@ -36,29 +36,29 @@ public class AppConfigTempDB extends AppConfigBase {
         sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;
     }
-
+    
     private Properties hibernateProperties() {
         Properties properties = new Properties();
         properties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
         properties.put("hibernate.show_sql", "false");
         properties.put("hibernate.format_sql", "false");
         properties.put("hibernate.hbm2ddl.auto", "create");
-        return properties;        
+        return properties;
     }
-
-	@Bean
+    
+    @Bean
     @Autowired
     public HibernateTransactionManager transactionManager(SessionFactory sessionFactory) {
-       HibernateTransactionManager txManager = new HibernateTransactionManager();
-       txManager.setSessionFactory(sessionFactory);
-       return txManager;
+        HibernateTransactionManager txManager = new HibernateTransactionManager();
+        txManager.setSessionFactory(sessionFactory);
+        return txManager;
     }
-
+    
     @Bean
     public BufferedReader in() {
         return new BufferedReader(new InputStreamReader(System.in));
     }
-
+    
     @Bean
     public PrintStream out() {
         return System.out;

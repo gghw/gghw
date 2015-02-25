@@ -78,7 +78,7 @@ public class CommandLineApp {
         
         final int interest = Math.round(sum * termDays * LoanRules.INTEREST_PER_DAY);
         out.println("Interest will be: " + interest);
-
+        
         String ip = "";
         while ( !InetAddresses.isInetAddress(ip) ) {
             out.print("ClientIP(IPv4): ");
@@ -139,8 +139,8 @@ public class CommandLineApp {
     }
     
     private void describeLoan(Loan loan) {
-        Application application = appServices.getLoanApplication(loan.getId());
-        List<Extension> extensions = appServices.listLoanExtensions(loan.getId());
+        Application application = loan.getApplication();
+        List<Extension> extensions = loan.getExtensions();
         out.println("" + loan);
         out.println("  * " + application);
         for ( Extension extension : extensions ) {
