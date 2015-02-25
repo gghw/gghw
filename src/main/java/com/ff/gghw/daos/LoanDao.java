@@ -33,6 +33,7 @@ public class LoanDao extends BaseDao {
     public List<Loan> findByClient(String client) {
         Criteria criteria = getSession().createCriteria(Loan.class);
         criteria.add(Restrictions.eq("client", client));
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         return (List<Loan>) criteria.list();
     }
 }
